@@ -63,7 +63,8 @@ class Pong {
 
         for (let w = 0; w < 640; w++) {
             for (let h = 0; h < 480; h++ ) {
-                frame.setPixel(w, h, new Color(w, h, 88, 255));
+                //frame.setPixel(w, h, new Color(0, 0, 0, w/2));
+                frame.setPixel(w, h, new Color(0, 0, 0, (w^h)));
             }
         }
 
