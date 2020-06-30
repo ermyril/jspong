@@ -7,7 +7,6 @@ class Color {
     }
 }
 
-
 class Position {
     constructor(x, y) {
         this.x = x;
@@ -21,23 +20,29 @@ class Frame {
         this.pixels = this.imageData.data;
     }
 
-
     setPixel(x, y, color) {
-        const index = ( y * 640 + x ) * 4;
+        const index = (y * 640 + x) * 4;
 
-        if ( index < this.pixels.length && index >= 0) {
+        if (index < this.pixels.length && index >= 0) {
             this.pixels[index] = color.r;
-            this.pixels[index+1] = color.g;
-            this.pixels[index+2] = color.b;
-            this.pixels[index+3] = color.a;
+            this.pixels[index + 1] = color.g;
+            this.pixels[index + 2] = color.b;
+            this.pixels[index + 3] = color.a;
         }
-
     }
 
+    setCirclePixel(radius, color) {
+        const index = (Math.PI * radius ^ 2);
+
+        this.pixels[index] = color.r;
+        this.pixels[index + 1] = color.g;
+        this.pixels[index + 2] = color.b;
+        this.pixels[index + 3] = color.a;
+    }
 }
 
 class Paddle {
-    constructor( pos, width, height, velocity, color, pongConfig ) {
+    constructor(pos, width, height, velocity, color, pongConfig) {
         this.pongConfig = pongConfig;
         this.width = width;
         this.height = height;
@@ -53,14 +58,10 @@ class Paddle {
         );
 
         this.registerHandlers();
-
     }
 
     draw(frame) {
-
-
-
-        for (let y = 0; y < this.height; y++ ) {
+        for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 frame.setPixel(this.pos.x + x, this.pos.y + y, this.color, frame.pixels);
             }
@@ -94,6 +95,23 @@ class Paddle {
     }
 }
 
+class Circle {
+    constructor(pos, radius, color, pongConfig) {
+        this.pongConfig = pongConfig
+        this.radius = radius
+        this.color = color
+
+        this.pos = new Position(
+            pos.x - this.pongConfig.width / 2,
+            pos.y - this.pongConfig.height / 2
+        )
+    }
+
+    draw(frame) {
+        frame.setCirclePixel(this.radius, this.color, frame.pixels);
+    }
+}
+
 class Pong {
     constructor(canvas, width, height) {
         this.config = {
@@ -104,7 +122,7 @@ class Pong {
         this.canvas = canvas;
         this.canvas.width = this.config.width;
         this.canvas.height = this.config.height;
-        this.canvas.style = "border: 3px solid #bababa";
+        this.canvas.style = "border: 2px solid #BC8F8F";
         this.lastRender = 0;
 
         this.ctx = canvas.getContext('2d');
@@ -112,15 +130,21 @@ class Pong {
 
     start() {
         this.player1 = new Paddle(
-            new Position(20, this.config.height / 2),
+            new Position(15, this.config.height / 2),
             10, // width
             60, // height
-            5,  // velocity
-            new Color(0, 0, 0, 255),
+            7,  // velocity
+            new Color(128, 128, 128, 255),
             this.config // pongConfig
         );
 
         window.requestAnimationFrame(this.loop);
+        
+        this.obje = new Circle(new Position(this.config.width / 2, this.config.height / 2),
+            30, // radius
+            new Color(0, 255, 255, 255),
+            this.config //pongConfig
+        );
     }
 
     loop = (timestamp) => {
@@ -142,11 +166,10 @@ class Pong {
 
         this.player1.update();
         this.player1.draw(frame);
-       
+
 
         this.ctx.putImageData(frame.imageData, 0, 0);
     }
-
 }
 
 
