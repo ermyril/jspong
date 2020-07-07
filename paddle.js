@@ -8,6 +8,7 @@ export default class Paddle {
         this.height = height;
         this.velocity = velocity;
         this.color = color;
+        this.score = 0;
 
         this.movingUp = false;
         this.movingDown = false;
@@ -17,27 +18,29 @@ export default class Paddle {
             pos.y - height / 2
         );
 
-        this.registerHandlers();
 
     }
 
     draw(frame) {
-
-
-
+        const startX = this.pos.x - this.width / 2;
+        const startY = this.pos.y - this.height / 2;
         for (let y = 0; y < this.height; y++ ) {
             for (let x = 0; x < this.width; x++) {
-                frame.setPixel(this.pos.x + x, this.pos.y + y, this.color, frame.pixels);
+                frame.setPixel(startX + x, startY + y, this.color, frame.pixels);
             }
         }
     }
 
     update() {
-        if (this.movingDown && (this.pos.y + this.height) < this.pongConfig.height) {
+        if (this.movingDown && (this.pos.y + this.height / 2) < this.pongConfig.height) {
             this.pos.y += this.velocity;
-        } else if (this.movingUp && this.pos.y > 0) {
+        } else if (this.movingUp && this.pos.y - this.height / 2 > 0) {
             this.pos.y -= this.velocity;
         }
+    }
+
+    aiUpdate(ball) {
+        this.pos.y = ball.pos.y;
     }
 
     registerHandlers() {
