@@ -18,12 +18,42 @@ class Pong {
         this.canvas.style = "border: 3px solid #bababa";
         this.lastRender = 0;
 
+        this.state = "start";
+
         this.ctx = canvas.getContext('2d');
+
+        this.registerHandlers();
+    }
+
+    registerHandlers() {
+        document.addEventListener("keydown", event => {
+            if (event.code === "Space") {
+                this.state = "play";
+            }
+        });
+    }
+
+    setState(state) {
+        this.state = state;
+    }
+
+    getCenter() {
+        return new Position(this.config.width / 2, this.config.height / 2);
     }
 
     start() {
         this.player1 = new Paddle(
             new Position(20, this.config.height / 2),
+            10, // width
+            60, // height
+            5,  // velocity
+            new Color(0, 0, 0, 255),
+            this.config // pongConfig
+        );
+        this.player1.registerHandlers();
+
+        this.player2 = new Paddle(
+            new Position(620, this.config.height / 2),
             10, // width
             60, // height
             5,  // velocity
@@ -36,7 +66,7 @@ class Pong {
             7, // radius
             2,  // velocity
             new Color(0, 0, 0, 255),
-            this.config // pongConfig
+            this // Pong
         );
 
 
@@ -63,7 +93,13 @@ class Pong {
         this.player1.update();
         this.player1.draw(frame);
 
-        this.ball.update();
+        this.player2.aiUpdate(this.ball);
+        this.player2.draw(frame);
+
+        if (this.state == "play") {
+            this.ball.update(this.player1, this.player2);
+        }
+
         this.ball.draw(frame);
        
 
