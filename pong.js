@@ -28,6 +28,10 @@ class Pong {
     registerHandlers() {
         document.addEventListener("keydown", event => {
             if (event.code === "Space") {
+                if (this.player1.score === 3 || this.player2.score === 3) {
+                    this.player1.score = 0;
+                    this.player2.score = 0;
+                }
                 this.state = "play";
             }
         });
@@ -64,7 +68,7 @@ class Pong {
         this.ball = new Ball(
             new Position(this.config.width / 2, this.config.height / 2),
             7, // radius
-            2,  // velocity
+            4,  // velocity
             new Color(0, 0, 0, 255),
             this // Pong
         );

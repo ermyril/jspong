@@ -1,5 +1,36 @@
 import { Position } from './utils.js';
 
+const digits = [
+    [
+        1,1,1,
+        1,0,1,
+        1,0,1,
+        1,0,1,
+        1,1,1,
+    ],
+    [
+        0,1,0,
+        0,1,0,
+        0,1,0,
+        0,1,0,
+        0,1,0,
+    ],
+    [
+        1,1,1,
+        0,0,1,
+        0,1,1,
+        1,0,0,
+        1,1,1,
+    ],
+    [
+        1,1,1,
+        0,0,1,
+        1,1,1,
+        0,0,1,
+        1,1,1,
+    ],
+
+];
 
 export default class Paddle {
     constructor( pos, width, height, velocity, color, pongConfig ) {
@@ -21,6 +52,31 @@ export default class Paddle {
 
     }
 
+    drawNumber(pos, color, size, digit, frame) {
+        let startX = pos.x - (size * 3) / 2;
+        let startY = pos.y - (size * 5) / 2;
+
+        for (let i = 0; i < digit.length; i++) {
+            if (digit[i] === 1) {
+                for (let y = startY; y < (startY + size); y++) {
+                    for (let x = startX; x < (startX + size); x++ ) {
+                        frame.setPixel(x, y, color, frame.pixels);
+                    }
+                }
+            }
+            startX += size;
+            if ( (i+1) % 3 === 0 ) {
+                startY += size;
+                startX -= size * 3;
+            }
+        }
+
+    }
+
+    lerp(a, b, pct) {
+        return a + pct *  (b - a);
+    }
+
     draw(frame) {
         const startX = this.pos.x - this.width / 2;
         const startY = this.pos.y - this.height / 2;
@@ -29,6 +85,9 @@ export default class Paddle {
                 frame.setPixel(startX + x, startY + y, this.color, frame.pixels);
             }
         }
+
+        const posX = this.lerp(this.pos.x, this.pongConfig.width / 2, 0.4);
+        this.drawNumber(new Position(posX, 50), this.color, 10, digits[this.score], frame);
     }
 
     update() {
